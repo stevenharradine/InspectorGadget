@@ -22,11 +22,13 @@ if (cluster.isMaster) {
 
   webserver.use (function (req, res) {
     var url_folders = req.originalUrl.split ('/'),
-        role        = url_folders[1],
+        enviroment  = url_folders[1],
         project     = url_folders[2],
-        enviroment  = url_folders[3]
+        role        = url_folders[3],
+        ssh         = "ssh " + CONFIG.USERID + "@" + role + "." + project + "-" + enviroment + "." + CONFIG.DOMAIN;
+        netstat     = sh.exec ("echo 'netstat -lnt' | " + ssh).stdout
 
-    res.send(sh.exec ("echo 'netstat -lnt' | ssh " + CONFIG.USERID + "@" + role + "." + project + "-" + enviroment + "." + CONFIG.DOMAIN).stdout)
+    res.send(netstat)
   })
 
   webserver.listen(CONFIG.PORT)
