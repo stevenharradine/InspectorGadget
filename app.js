@@ -48,6 +48,6 @@ if (cluster.isMaster) {
     }
   })
 
-  webserver.listen(CONFIG.PORT)
+  webserver.listen(CONFIG.PORT, 'localhost')
   console.log('Inspector Gadget is running')
 }
