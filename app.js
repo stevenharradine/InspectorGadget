@@ -1,5 +1,6 @@
-var CONFIG  = require("./config"),
-    cluster = require('cluster')
+var CONFIG      = require("./config"),
+    sh          = require('execSync'),
+    cluster     = require('cluster')
 
 if (cluster.isMaster) {
   var cpuCount        = require('os').cpus().length,
@@ -20,9 +21,14 @@ if (cluster.isMaster) {
       webserver = express()
 
   webserver.use (function (req, res) {
-      res.send("Hello World!")
+    var url_folders = req.originalUrl.split ('/'),
+        role        = url_folders[1],
+        project     = url_folders[2],
+        enviroment  = url_folders[3]
+
+    res.send(sh.exec ("echo 'netstat -lnt' | ssh " + CONFIG.USERID + "@" + role + "." + project + "-" + enviroment + "." + CONFIG.DOMAIN).stdout)
   })
 
   webserver.listen(CONFIG.PORT)
-  console.log('Webserver is running')
+  console.log('Inspector Gadget is running')
 }
