@@ -1,0 +1,10 @@
+{
+  "name": "node-express-base",
+  "description": "This is a good starting point for node express applications and includes clustering.",
+  "version": "0.0.0",
+  "private": true,
+  "dependencies": {
+    "express": "*",
+    "cluster": "*"
+  }
+}
