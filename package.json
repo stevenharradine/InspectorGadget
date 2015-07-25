@@ -1,10 +1,11 @@
 {
-  "name": "node-express-base",
-  "description": "This is a good starting point for node express applications and includes clustering.",
+  "name": "Inspector Gadget",
+  "description": "Will verify a system is running correctly",
   "version": "0.0.0",
   "private": true,
   "dependencies": {
     "express": "*",
-    "cluster": "*"
+    "cluster": "*",
+    "execSync": "*"
   }
 }
