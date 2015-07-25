@@ -26,9 +26,26 @@ if (cluster.isMaster) {
         project     = url_folders[2],
         role        = url_folders[3],
         ssh         = "ssh " + CONFIG.USERID + "@" + role + "." + project + "-" + enviroment + "." + CONFIG.DOMAIN;
-        netstat     = sh.exec ("echo 'netstat -lnt' | " + ssh).stdout
+        netstat     = sh.exec ("echo 'netstat -lnt' | " + ssh + " | grep LISTEN").stdout,
+        netstat_lines = netstat.split("\n")
 
-    res.send(netstat)
+    if (enviroment != "favicon.ico") {
+      for (nl in netstat_lines) {
+        if (nl >= 1) {
+          netstat_line_parts = netstat_lines[nl].replace(/\s+/g, " ").split (" ")
+
+          if (netstat_line_parts[0] == "tcp") {
+            var local_address      = netstat_line_parts[3].split(":"),
+                local_address_ip   = local_address[0],
+                local_address_port = local_address[1]
+
+            console.log (local_address_ip + " " + local_address_port)
+          }
+        }
+      }
+
+      res.send()
+    }
   })
 
   webserver.listen(CONFIG.PORT)
