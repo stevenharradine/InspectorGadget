@@ -49,8 +49,11 @@ if (cluster.isMaster) {
       }
 
       var all_expected_ports_found   = true,
-          expected_ports             = [],
-          expected_inbound_ports     = [{
+          expected_ports             = []
+
+
+      if (role == "inbound") {
+        expected_ports = [{
             "listen": "0.0.0.0",
             "port": "22"
           },{
@@ -59,20 +62,15 @@ if (cluster.isMaster) {
           },{
             "listen": "0.0.0.0",
             "port": "80"
-          }],
-          expected_application_ports = [{
+          }]
+      } else if (role == "application") {
+        expected_ports = [{
             "listen": "0.0.0.0",
             "port": "22"
           },{
             "listen": "0.0.0.0",
             "port": "80"
           }]
-
-
-      if (role == "inbound") {
-        expected_ports = expected_application_ports
-      } else if (role == "application") {
-        expected_ports = expected_application_ports
       }
 
       for (index_ep in expected_ports) {
