@@ -51,7 +51,6 @@ if (cluster.isMaster) {
       var all_expected_ports_found   = true,
           expected_ports             = []
 
-
       if (role == "inbound") {
         expected_ports = [{
             "listen": "0.0.0.0",
