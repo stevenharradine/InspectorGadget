@@ -21,13 +21,14 @@ if (cluster.isMaster) {
       webserver = express()
 
   webserver.use (function (req, res) {
-    var url_folders = req.originalUrl.split ('/'),
-        enviroment  = url_folders[1],
-        project     = url_folders[2],
-        role        = url_folders[3],
-        ssh         = "ssh " + CONFIG.USERID + "@" + role + "." + project + "-" + enviroment + "." + CONFIG.DOMAIN;
-        netstat     = sh.exec ("echo 'netstat -lnt' | " + ssh + " | grep LISTEN").stdout,
-        netstat_lines = netstat.split("\n")
+    var url_folders   = req.originalUrl.split ('/'),
+        enviroment    = url_folders[1],
+        project       = url_folders[2],
+        role          = url_folders[3],
+        ssh           = "ssh -o StrictHostKeyChecking=no " + CONFIG.USERID + "@" + role + "." + project + "-" + enviroment + "." + CONFIG.DOMAIN;
+        netstat       = sh.exec ("echo 'netstat -lnt' | " + ssh + " | grep LISTEN").stdout,
+        netstat_lines = netstat.split("\n"),
+        open_ports    = []
 
     if (enviroment != "favicon.ico") {
       for (nl in netstat_lines) {
@@ -39,15 +40,50 @@ if (cluster.isMaster) {
                 local_address_ip   = local_address[0],
                 local_address_port = local_address[1]
 
-            console.log (local_address_ip + " " + local_address_port)
+            open_ports.push ({
+              "listen": local_address_ip,
+              "port": local_address_port
+            })
           }
         }
       }
 
-      res.send()
+      if (role == "inbound") {
+        var all_expected_ports_found = true,
+            expected_ports           = [{
+              "listen": "0.0.0.0",
+              "port": "22"
+            },{
+              "listen": "0.0.0.0",
+              "port": "80"
+            }]
+
+        for (index_ep in expected_ports) {
+          var this_port_found = false
+
+          for (index_op in open_ports) {
+            if (compareExpectedPorts (expected_ports[index_ep], open_ports[index_op])) {
+              this_port_found = true
+            }
+          }
+
+          if (!this_port_found) {
+            all_expected_ports_found = false
+          }
+        }
+      }
+
+      res.send(JSON.stringify ("[{'system_state':'" + (all_expected_ports_found ? "pass" : "fail") + "'}]"))
     }
   })
 
   webserver.listen(CONFIG.PORT, 'localhost')
   console.log('Inspector Gadget is running')
+}
+
+function compareExpectedPorts (obj1, obj2) {
+  if (obj1.listen == obj2.listen && obj1.port == obj2.port)
+    return true
+  else
+    return false
 }
