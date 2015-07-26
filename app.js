@@ -48,32 +48,45 @@ if (cluster.isMaster) {
         }
       }
 
+      var all_expected_ports_found   = true,
+          expected_ports             = [],
+          expected_inbound_ports     = [{
+            "listen": "0.0.0.0",
+            "port": "22"
+          },{
+            "listen": "0.0.0.0",
+            "port": "443"
+          },{
+            "listen": "0.0.0.0",
+            "port": "80"
+          }],
+          expected_application_ports = [{
+            "listen": "0.0.0.0",
+            "port": "22"
+          },{
+            "listen": "0.0.0.0",
+            "port": "80"
+          }]
+
+
       if (role == "inbound") {
-        var all_expected_ports_found = true,
-            expected_ports           = [{
-              "listen": "0.0.0.0",
-              "port": "22"
-            },{
-              "listen": "0.0.0.0",
-              "port": "443"
-            },{
-              "listen": "0.0.0.0",
-              "port": "80"
-            }]
+        expected_ports = expected_application_ports
+      } else if (role == "application") {
+        expected_ports = expected_application_ports
+      }
 
-        for (index_ep in expected_ports) {
-          var this_port_found = false
+      for (index_ep in expected_ports) {
+        var this_port_found = false
 
-          for (index_op in open_ports) {
-            if (compareExpectedPorts (expected_ports[index_ep], open_ports[index_op])) {
-              this_port_found = true
-            }
+        for (index_op in open_ports) {
+          if (compareExpectedPorts (expected_ports[index_ep], open_ports[index_op])) {
+            this_port_found = true
           }
+        }
 
-          if (!this_port_found) {
-            all_expected_ports_found = false
-            console.log (expected_ports[index_ep])
-          }
+        if (!this_port_found) {
+          all_expected_ports_found = false
+          console.log (expected_ports[index_ep])
         }
       }
 
