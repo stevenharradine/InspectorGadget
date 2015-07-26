@@ -55,6 +55,9 @@ if (cluster.isMaster) {
               "port": "22"
             },{
               "listen": "0.0.0.0",
+              "port": "443"
+            },{
+              "listen": "0.0.0.0",
               "port": "80"
             }]
 
@@ -69,6 +72,7 @@ if (cluster.isMaster) {
 
           if (!this_port_found) {
             all_expected_ports_found = false
+            console.log (expected_ports[index_ep])
           }
         }
       }
