@@ -31,9 +31,9 @@ if (cluster.isMaster) {
         open_ports    = []
 
     if (enviroment != "favicon.ico") {
-      for (nl in netstat_lines) {
-        if (nl >= 1) {
-          netstat_line_parts = netstat_lines[nl].replace(/\s+/g, " ").split (" ")
+      for (index_nl in netstat_lines) {
+        if (index_nl >= 1) {
+          netstat_line_parts = netstat_lines[index_nl].replace(/\s+/g, " ").split (" ")
 
           if (netstat_line_parts[0] == "tcp") {
             var local_address      = netstat_line_parts[3].split(":"),
